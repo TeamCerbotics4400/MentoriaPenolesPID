@@ -4,18 +4,19 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
 
-public class DrivePID extends CommandBase {
-  /** Creates a new DrivePID. */
+public class DrivePIDWPILib extends CommandBase {
+  /** Creates a new DrivePIDWPILib. */
   Drivetrain drivetrain;
   double setpoint;
 
-  double lastError = 0, deltaT = 0, ultimoTiempo = 0, errorSum = 0;
-  public DrivePID(Drivetrain drivetrain, double setpoint) {
+  PIDController controller = new PIDController(Constants.kP, Constants.kI, Constants.kD);
+
+  public DrivePIDWPILib(Drivetrain drivetrain, double setpoint) {
     this.drivetrain = drivetrain;
     this.setpoint = setpoint;
 
@@ -25,33 +26,28 @@ public class DrivePID extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    controller.setSetpoint(setpoint);
+    controller.setTolerance(0.01);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double tiempoActual = Timer.getFPGATimestamp();
-    deltaT = tiempoActual - ultimoTiempo;
-    double error = setpoint - drivetrain.getDistance();
-    errorSum = errorSum + error;
-    double derivativa = (error - lastError) / deltaT;
-
-    double salida = (Constants.kP * error) + (Constants.kD * derivativa) + (Constants.kI * errorSum);
-
+    double salida = controller.calculate(drivetrain.getDistance());
     drivetrain.drive(salida, 0);
-
-
-    lastError = error;
-    ultimoTiempo = tiempoActual;
   }
+
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    drivetrain.drive(0, 0);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return controller.atSetpoint();
   }
 }
