@@ -18,5 +18,5 @@ public final class Constants {
     public static final int rightMasterID = 3;
     public static final int rightSlaveID = 4;
 
-    public static double kP = 0.0, kD = 0.0, kI = 0.0;
+    public static double kP = 0.1, kD = 0.01, kI = 0.001;
 }

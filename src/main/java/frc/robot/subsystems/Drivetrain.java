@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -52,10 +53,12 @@ public class Drivetrain extends SubsystemBase {
   public void drive(double speed, double turn){
     differentialDrive.arcadeDrive(speed, turn);
   }
+//10.75 Representa la reducción de la caja de velocidad
+//0.1524 representa el diametro de las llantas del chasis
 
   public double encoderCountsToMeters(double encoderCounts){
-    double wheelRotations = encoderCounts / 10.75;
-    double distance = wheelRotations * (Math.PI * 0.1524);
+    double wheelRotations = encoderCounts / 10.75; 
+    double distance = wheelRotations * (Math.PI * 0.1524); 
     return distance;
   }
 
@@ -76,6 +79,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void log(){
-    
+    SmartDashboard.putNumber("Distancia derecha", encoderCountsToMeters(encoderDer.getPosition()));
+    SmartDashboard.putNumber("Distancia izquierda", encoderCountsToMeters(encoderIzq.getPosition()));
   }
 }
